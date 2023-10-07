@@ -167,3 +167,5 @@ helm install mysql bitnami/mysql --namespace wordpress -f ./mysql-values.yaml
 helm install wordpress bitnami/wordpress --namespace wordpress -f ./wordpress-values.yaml
 
 DevOps_Labs 
+
+![Alt text](<Captura de tela de 2023-10-06 23-52-10.png>)
