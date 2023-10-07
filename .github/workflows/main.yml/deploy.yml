@@ -1,0 +1,71 @@
+name: Deploy WordPress with Helm
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+      - name: Deploy MySQL with Helm
+        run: |
+          # Crie um arquivo values.yaml para personalizar a instalação do MySQL
+          cat <<EOF > mysql-values.yaml
+mysqlRootPassword: <YOUR_MYSQL_PASSWORD>
+mysqlDatabase: wordpress
+EOF
+          # Implante o MySQL com Helm
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm install mysql bitnami/mysql -f mysql-values.yaml
+
+      - name: Wait for MySQL to start
+        run: |
+          sleep 30
+
+      - name: Deploy WordPress with Helm
+        run: |
+          # Crie um arquivo values.yaml para personalizar a instalação do WordPress
+          cat <<EOF > wordpress-values.yaml
+wordpressPassword: <YOUR_WORDPRESS_PASSWORD>
+wordpressTablePrefix: wp_
+EOF
+          # Implante o WordPress com Helm
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm install wordpress bitnami/wordpress -f wordpress-values.yaml
+
+      - name: Wait for WordPress to start
+        run: |
+          sleep 30
+
+      - name: Install Argo CD CLI
+        run: |
+          wget https://github.com/argoproj/argo-cd/releases/download/v2.2.4/argocd-linux-amd64 -O /usr/local/bin/argocd
+          chmod +x /usr/local/bin/argocd
+
+      - name: Login to Argo CD
+        run: |
+          argocd login geraldodevops.local:443 --username admin --password <YOUR_ARGOCD_PASSWORD>
+
+      - name: Sync Applications with Argo CD
+        run: |
+          argocd app sync wordpress-app
+
+      - name: Get WordPress URL
+        run: |
+          echo "WordPress URL: http://geraldodevops.local/wp-admin/"
