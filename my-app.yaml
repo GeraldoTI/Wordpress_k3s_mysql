@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: S3
+spec:
+  destination:
+    name: geraldodevops.local  # Nome do contexto do cluster (pode ser diferente)
+    namespace: default          # Namespace onde os recursos serão implantados
+    server: https://kubernetes.default.svc  # Endereço do cluster (pode variar)
+  source:
+    repoURL: 'https://github.com/GeraldoTI/Wordpress_k3s_mysql'
+    targetRevision: HEAD
+    path: k8s-resources/wordpress  # Caminho para os arquivos do Kubernetes no repositório
+    directory:
+      recurse: true
+  project: default  # O nome do projeto no Argo CD (pode variar)
+  syncPolicy:
+    syncOptions:
+      - Validate=false
+      - Prune=true
+      - CreateNamespace=true
+
