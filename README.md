@@ -166,3 +166,4 @@ Para implantar o WordPress e o MySQL em um cluster Kubernetes, você pode usar o
 helm install mysql bitnami/mysql --namespace wordpress -f ./mysql-values.yaml
 helm install wordpress bitnami/wordpress --namespace wordpress -f ./wordpress-values.yaml
 
+DevOps_Labs 
