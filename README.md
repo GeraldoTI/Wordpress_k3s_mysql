@@ -168,4 +168,3 @@ helm install wordpress bitnami/wordpress --namespace wordpress -f ./wordpress-va
 
 DevOps_Labs 
 
-![Alt text](<Captura de tela de 2023-10-06 23-52-10.png>)
